@@ -1,0 +1,1787 @@
+body {
+    font-family: 'Amiri' ,'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* تحسينات للأيقونات */
+.icon-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-text-fill-color: transparent;
+}
+
+.card-hover {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* أنماط للرسم البياني D3 مع تباعد أكبر */
+.node {
+    cursor: pointer;
+}
+
+.node circle {
+    stroke-width: 3px;
+    transition: all 0.3s ease;
+}
+
+.node circle:hover {
+    r: 14px;
+    filter: brightness(1.2);
+}
+
+.node text {
+    font-size: 14px;
+    font-weight: 500;
+    fill: #2c3e50;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.9);
+    pointer-events: none;
+    transition: font-size 0.3s;
+    text-anchor: start;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.node--internal text {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.link {
+    fill: none;
+    stroke: #7f8c8d;
+    stroke-opacity: 0.6;
+    stroke-width: 2px;
+    transition: stroke 0.3s;
+}
+
+.link:hover {
+    stroke: #3498db;
+    stroke-width: 2.5px;
+}
+
+.highlight {
+    background-color: #3bc7ff;
+    padding: 2px 4px;
+    border-radius: 2px;
+    box-shadow: 0 0 3px #3bc7ff33;
+}
+
+.node-highlight {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { stroke-width: 2px; }
+    50% { stroke-width: 4px; }
+    100% { stroke-width: 2px; }
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border-left: 4px solid #3498db;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    text-align: right;
+    line-height: 1.5;
+}
+
+.tooltip strong {
+    color: #3498db;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* أنماط للشجرة النصية مع تباعد أكبر */
+#wbsTextTree {
+    list-style-type: none;
+    padding-right: 0;
+    padding-left: 10px;
+}
+
+#wbsTextTree ul {
+    list-style-type: none;
+    padding-right: 25px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border-right: 2px solid #e0e0e0;
+}
+
+#wbsTextTree li {
+    margin: 10px 0;
+    position: relative;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+#wbsTextTree li:hover {
+    background: #eaf2f8;
+    transform: translateX(-5px);
+}
+
+#wbsTextTree .caret {
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    color: #1a3a6c;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 15px;
+}
+
+#wbsTextTree .caret:hover {
+    background-color: #d6eaf8;
+    padding-right: 18px;
+}
+
+#wbsTextTree .caret::before {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: inline-block;
+    width: 24px;
+    font-size: 14px;
+    transition: transform 0.3s;
+}
+
+#wbsTextTree .caret.caret-down::before {
+    transform: rotate(90deg);
+}
+
+#wbsTextTree .nested {
+    display: none;
+}
+
+#wbsTextTree .active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#wbsTextTree i {
+    width: 24px;
+    text-align: center;
+    font-size: 16px;
+}
+
+#wbsTextTree .fa-folder {
+    color: #f39c12;
+}
+
+#wbsTextTree .fa-folder-open {
+    color: #f39c12;
+}
+
+#wbsTextTree .fa-file-alt {
+    color: #3498db;
+}
+
+#wbsTextTree .fa-flag-checkered {
+    color: #e74c3c;
+}
+
+#wbsTextTree .fa-tasks {
+    color: #2ecc71;
+}
+
+.diagram-container {
+    width: 100%;
+    height: 550px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+/* أنماط Gantt Chart */
+.gantt-container {
+    width: 100%;
+    height: 600px;
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background: #f8f9fa;
+    overflow: auto;
+    padding: 10px;
+}
+
+#gantt-chart {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.gantt-task {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 13px;
+    text-align: right;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+.gantt-task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    z-index: 10 !important;
+}
+
+.gantt-task.phase {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    border-left: 4px solid #0369a1;
+    font-weight: bold;
+    height: 50px;
+}
+
+.gantt-task.task {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-left: 4px solid #15803d;
+    height: 40px;
+}
+
+.gantt-task.parallel {
+    background: linear-gradient(135deg, #eab308, #ca8a04);
+    border-left: 4px solid #a16207;
+    height: 35px;
+}
+
+.gantt-milestone {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #dc2626;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 5;
+}
+
+.gantt-timeline {
+    position: absolute;
+    width: 100%;
+    border-top: 2px solid #6b7280;
+    z-index: 1;
+}
+
+.gantt-today {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: #ef4444;
+    z-index: 2;
+}
+
+.gantt-today::after {
+    content: 'اليوم';
+    position: absolute;
+    top: -25px;
+    left: -15px;
+    background: #ef4444;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.gantt-timescale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #d1d5db;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.gantt-timescale-item {
+    position: absolute;
+    text-align: center;
+    font-size: 12px;
+    color: #4b5563;
+    font-weight: 500;
+    border-left: 1px solid #d1d5db;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    background: white;
+}
+
+.gantt-resource-label {
+    position: absolute;
+    left: -120px;
+    width: 110px;
+    text-align: left;
+    padding: 0 10px;
+    font-size: 13px;
+    color: #374151;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.gantt-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    max-width: 300px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    border-right: 4px solid #0ea5e9;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    text-align: right;
+    line-height: 1.6;
+}
+
+.gantt-tooltip strong {
+    color: #0ea5e9;
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 5px;
+}
+
+.gantt-tooltip .duration {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.gantt-tooltip .resource {
+    color: #eab308;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.3rem;
+    color: #3498db;
+    font-weight: bold;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.zoom-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zoom-btn i {
+    font-size: 18px;
+}
+
+.zoom-btn:hover {
+    background: #2980b9;
+    transform: scale(1.1);
+}
+
+.zoom-btn:active {
+    transform: scale(0.95);
+}
+
+.expand-btn, .collapse-btn {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.expand-btn:hover {
+    background: #27ae60;
+}
+
+.collapse-btn {
+    background: #e74c3c;
+}
+
+.collapse-btn:hover {
+    background: #c0392b;
+}
+
+/* تحسينات لرسائل الخطأ */
+.error-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* تحسينات للجدول */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 14px;
+}
+
+td, th {
+    text-align: right;
+    padding: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tr:hover {
+    background-color: #f9fafb;
+}
+
+/* تخصيص شريط التمرير */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* تحسينات للبطاقات (NO SCROLL) */
+.objective-card {
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+    border-right: 4px solid #3498db42;
+}
+
+.requirement-card {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    border-right: 4px solid #3498db29;
+}
+
+/* أنماط للألوان */
+.bg-red-100 { background-color: #fee2e2 !important; }
+.text-red-800 { color: #991b1b !important; }
+.bg-yellow-100 { background-color: #fef3c7 !important; }
+.text-yellow-800 { color: #92400e !important; }
+.bg-green-100 { background-color: #d1fae5 !important; }
+.text-green-800 { color: #065f46 !important; }
+.bg-blue-100 { background-color: #dbeafe !important; }
+.text-blue-800 { color: #1e40af !important; }
+
+/* تنسيق لرؤوس الجدول */
+table thead th {
+    font-weight: 700;
+    color: #374151;
+    background-color: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* تنسيق للخلايا */
+table tbody td {
+    color: #4b5563;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+/* تحسينات للزرائر */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* أنماط لبادجات الأولوية */
+.inline-flex.items-center.px-3.py-1 {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    min-width: 70px;
+    justify-content: center;
+}
+
+/* تحسينات للأهداف والمتطلبات (NO SCROLL) */
+#objectivesList li, #requirementsList li, #wbsTextTree li {
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+#objectivesList li:hover, #requirementsList li:hover {
+    transform: translateX(-5px);
+}
+
+/* تحسينات للعناوين */
+h2.text-xl {
+    font-size: 1.3rem;
+}
+
+/* تنسيق أفضل للنصوص */
+.text-lg {
+    line-height: 1.6;
+}
+
+/* أنماط تقدير الوقت PERT */
+.pert-estimation {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #bae6fd;
+}
+
+.pert-optimistic {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.pert-pessimistic {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.pert-likely {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.pert-calculated {
+    color: #8b5cf6;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.pert-standard-dev {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+/* أنماط للموارد البشرية */
+.resource-item {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+}
+
+.resource-role {
+    color: #92400e;
+    font-weight: 600;
+}
+
+.resource-count {
+    background: #d97706;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* أنماط للتحذيرات */
+.warning-note {
+    animation: pulseWarning 2s infinite;
+}
+
+@keyframes pulseWarning {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+}
+
+/* تحسينات للعرض على الأجهزة المحمولة */
+@media (max-width: 640px) {
+    .zoom-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+    
+    .expand-btn, .collapse-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .diagram-container {
+        height: 450px;
+    }
+    
+    .gantt-container {
+        height: 400px;
+    }
+    
+    .node text {
+        font-size: 12px;
+    }
+    
+    #wbsTextTree .caret {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+    }
+    
+    .gantt-task {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+    
+    .gantt-resource-label {
+        left: -80px;
+        width: 70px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gantt-task {
+        font-size: 12px;
+    }
+    
+    .gantt-resource-label {
+        left: -100px;
+        width: 90px;
+    }
+}
+
+/* أنماط مخطط جانت الجدولي */
+.gantt-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: white;
+    padding: 10px;
+}
+
+.gantt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed;
+    min-width: 800px;
+}
+
+.gantt-table th, 
+.gantt-table td {
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.gantt-table th {
+    background-color: #F0F8FF;
+    color: #1E90FF;
+    font-weight: 600;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* العمود الأول - أسماء المهام */
+.tasks-column {
+    width: 200px;
+    min-width: 200px;
+    background-color: #f5f5f5;
+    position: sticky;
+    right: 0;
+    z-index: 20;
+    text-align: right !important;
+    padding: 10px 15px !important;
+}
+
+.task-name {
+    font-weight: 600;
+    color: white;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* الأعمدة الزمنية - التاريخ من اليسار لليمين */
+.time-column {
+    width: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    padding: 0 !important;
+    position: relative;
+}
+
+/* رأس الجدول - التاريخ */
+.month-header {
+    background-color: rgba(30, 144, 255, 0.1);
+    padding: 8px 0 !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: white;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* خلايا المهام */
+.task-cell {
+    position: relative;
+    padding: 0 !important;
+    height: 40px;
+}
+
+/* أشرطة المهام */
+.task-bar {
+    position: absolute;
+    height: 24px;
+    border-radius: 4px;
+    top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.7rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    padding: 0 5px;
+    z-index: 5;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.task-bar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+/* ألوان المهام حسب الحالة */
+.task-bar.status-0 { background: linear-gradient(135deg, #1E90FF, #0066CC); }
+.task-bar.status-1 { background: linear-gradient(135deg, #32CD32, #228B22); }
+.task-bar.status-2 { background: linear-gradient(135deg, #FFA500, #FF8C00); }
+.task-bar.status-3 { background: linear-gradient(135deg, #9370DB, #8A2BE2); }
+.task-bar.status-4 { background: linear-gradient(135deg, #28a745, #1e7e34); }
+
+/* وسائل الإيضاح */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #F0F8FF;
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+.legend-color.status-0 { background: linear-gradient(135deg, #1E90FF, #0066CC); }
+.legend-color.status-1 { background: linear-gradient(135deg, #32CD32, #228B22); }
+.legend-color.status-2 { background: linear-gradient(135deg, #FFA500, #FF8C00); }
+.legend-color.status-3 { background: linear-gradient(135deg, #9370DB, #8A2BE2); }
+.legend-color.status-4 { background: linear-gradient(135deg, #28a745, #1e7e34); }
+
+/* تخصيص شريط التمرير */
+.gantt-scroll-container::-webkit-scrollbar {
+    height: 10px;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 5px;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-thumb {
+    background: #1E90FF;
+    border-radius: 5px;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #0066CC;
+}
+
+.task-progress {
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    border-radius: 0 0 2px 2px;
+}
+
+/* تلميحات المهام */
+.gantt-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    max-width: 300px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    border-right: 4px solid #0ea5e9;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    text-align: right;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.gantt-tooltip strong {
+    color: #0ea5e9;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 5px;
+}
+
+/* التجاوب */
+@media (max-width: 1200px) {
+    .tasks-column {
+        width: 180px;
+        min-width: 180px;
+    }
+    
+    .time-column {
+        width: 22px;
+        min-width: 22px;
+        max-width: 22px;
+    }
+    
+    .day-cell {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .tasks-column {
+        width: 160px;
+        min-width: 160px;
+    }
+    
+    .time-column {
+        width: 20px;
+        min-width: 20px;
+        max-width: 20px;
+    }
+    
+    .day-cell {
+        font-size: 0.65rem;
+    }
+    
+    .task-bar {
+        font-size: 0.65rem;
+        height: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tasks-column {
+        width: 140px;
+        min-width: 140px;
+    }
+    
+    .time-column {
+        width: 18px;
+        min-width: 18px;
+        max-width: 18px;
+    }
+    
+    .day-cell {
+        font-size: 0.6rem;
+    }
+    
+    .task-bar {
+        font-size: 0.6rem;
+        height: 20px;
+    }
+}
+
+/* تحسين تخطيط جدول جانت */
+.gantt-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    min-width: 800px;
+}
+
+.gantt-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: white;
+}
+
+.gantt-table th {
+    position: relative;
+    vertical-align: middle;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    font-weight: 600;
+    background-color: #F0F8FF;
+}
+
+.gantt-table td {
+    position: relative;
+    border: 1px solid #e0e0e0;
+    vertical-align: middle;
+    padding: 0;
+    height: 40px;
+}
+
+/* تحسين تنسيق عمود المهام */
+.tasks-column {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    background-color: #f9fafb;
+    position: sticky;
+    right: 0;
+    z-index: 50;
+    text-align: right !important;
+    padding: 8px 12px !important;
+    border-right: 2px solid #d1d5db !important;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* تحسين تنسيق خلايا الأيام */
+.time-column {
+    width: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    height: 40px;
+    padding: 0 !important;
+    border-right: 1px solid #e5e7eb !important;
+}
+
+.time-column .day-cell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* تحسين تنسيق رؤوس الأشهر */
+.month-header {
+    background-color: rgba(30, 144, 255, 0.15) !important;
+    color: #1e40af !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    padding: 8px 4px !important;
+    border-bottom: 2px solid #3b82f6 !important;
+}
+
+/* تحسين تنسيق أشرطة المهام */
+.task-bar {
+    position: absolute;
+    height: 28px;
+    border-radius: 4px;
+    top: 6px;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    padding: 0 8px;
+    z-index: 10;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 50px;
+}
+
+.task-bar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 100;
+}
+
+/* تنسيق حالة المهام */
+.task-bar.status-0 { 
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-left: 3px solid #1e40af;
+}
+.task-bar.status-1 { 
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-left: 3px solid #047857;
+}
+.task-bar.status-2 { 
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-left: 3px solid #b45309;
+}
+.task-bar.status-3 { 
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-left: 3px solid #5b21b6;
+}
+.task-bar.status-4 { 
+    background: linear-gradient(135deg, #059669, #047857);
+    border-left: 3px solid #065f46;
+}
+
+/* إخفاء العناوين القديمة */
+.gantt-table th:first-child {
+    background-color: #f9fafb;
+    border-bottom: 2px solid #d1d5db;
+}
+
+/* تحسين شريط التمرير */
+.gantt-scroll-container {
+    position: relative;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.gantt-scroll-container::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 6px;
+    border: 2px solid #f1f5f9;
+}
+
+.gantt-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+/* تنسيق النهاية الأسبوع */
+.day-cell.weekend {
+    background-color: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+}
+
+.day-cell.today {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    font-weight: bold;
+    position: relative;
+}
+
+.day-cell.today::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #dc2626;
+    border-radius: 50%;
+}
+
+/* تصميم مخطط جانت الجديد - جدولي بسيط */
+.gantt-simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    direction: rtl;
+    table-layout: auto;
+    min-width: 800px;
+}
+
+.gantt-simple-table thead {
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.gantt-simple-table th {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    min-width: 40px;
+}
+
+.gantt-simple-table th:first-child {
+    width: 300px;
+    min-width: 250px;
+    text-align: right;
+    padding-right: 20px;
+    position: sticky;
+    right: 0;
+    background: #0369a1;
+    z-index: 101;
+}
+
+.gantt-simple-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    height: 45px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.gantt-simple-table td:first-child {
+    background-color: #f8fafc;
+    font-weight: 600;
+    text-align: right;
+    padding-right: 20px;
+    position: sticky;
+    right: 0;
+    z-index: 99;
+    border-right: 2px solid #cbd5e1;
+}
+
+.gantt-simple-table tbody tr:nth-child(even) td:first-child {
+    background-color: #f1f5f9;
+}
+
+/* تنسيق خلايا التاريخ */
+.date-cell {
+    position: relative;
+    height: 45px;
+    min-width: 40px;
+}
+
+.date-header {
+    font-weight: bold;
+    font-size: 12px;
+    color: white;
+    background-color: #0066CC;
+    padding: 5px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+}
+
+/* أشرطة المهام المبسطة */
+.task-bar-simple {
+    position: absolute;
+    height: 28px;
+    border-radius: 4px;
+    top: 8px;
+    left: 2px;
+    right: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    padding: 0 5px;
+    z-index: 5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 20px;
+}
+
+.task-bar-simple:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+/* ألوان المهام حسب الحالة */
+.task-bar-simple.status-0 { background: #3b82f6; }  /* لم يبدأ - أزرق */
+.task-bar-simple.status-1 { background: #10b981; }  /* قيد التنفيذ - أخضر */
+.task-bar-simple.status-2 { background: #f59e0b; }  /* متأخر - برتقالي */
+.task-bar-simple.status-3 { background: #8b5cf6; }  /* مكتمل جزئياً - بنفسجي */
+.task-bar-simple.status-4 { background: #059669; }  /* مكتمل - أخضر داكن */
+
+/* نهاية الأسبوع */
+.weekend-day {
+    background-color: rgba(249, 115, 22, 0.08) !important;
+}
+
+/* حاوية المخطط المبسطة */
+.gantt-simple-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* وسائل الإيضاح المبسطة */
+.simple-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.simple-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.legend-color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* شريط التمرير */
+.gantt-simple-container::-webkit-scrollbar {
+    height: 10px;
+}
+
+.gantt-simple-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 5px;
+}
+
+.gantt-simple-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    border-radius: 5px;
+}
+
+.gantt-simple-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #0369a1, #075985);
+}
+
+
+
+/* ========== أنماط WBS التفاعلي باستخدام Treant.js ========== */
+.treant { width: 100%; height: 500px; }
+.treant > .node { padding: 3px; border: 1px solid #484848; }
+.treant > .node > p { font-family: 'IBM Plex Sans Arabic'; font-weight: 300; margin: 0; }
+
+/* تصميم الشجرة */
+.Treant .collapse-switch {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.Treant .node {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: white;
+    border: 2px solid;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    text-align: center;
+    min-width: 120px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.Treant .node:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+}
+
+/* ألوان العقد حسب النوع */
+.Treant .node.project {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    border-color: #d35400;
+    color: white;
+}
+
+.Treant .node.phase {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-color: #1f639b;
+    color: white;
+}
+
+.Treant .node.task {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-color: #219653;
+    color: white;
+}
+
+.Treant .node.deliverable {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-color: #71368a;
+    color: white;
+}
+
+.Treant .node.milestone {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-color: #a93226;
+    color: white;
+}
+
+/* الأيقونات داخل العقد */
+.node-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.node-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 3px;
+    line-height: 1.3;
+}
+
+.node-description {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+/* الوصلات بين العقد */
+.Treant .connector {
+    stroke: #7f8c8d;
+    stroke-width: 2px;
+    stroke-opacity: 0.6;
+    fill: none;
+}
+
+.Treant .connector:hover {
+    stroke: #3498db;
+    stroke-width: 3px;
+    stroke-opacity: 1;
+}
+
+/* حاوية الشجرة */
+.tree-container {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background: #f8f9fa;
+    overflow: auto;
+    position: relative;
+    padding: 20px;
+}
+
+/* أدوات التحكم بالشجرة */
+.tree-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.tree-control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.tree-control-btn:hover {
+    background: #2980b9;
+    transform: scale(1.1);
+}
+
+/* أداة التكبير/التصغير */
+.tree-zoom-slider {
+    width: 150px;
+    margin: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tree-zoom-slider input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    /* -webkit-appearance: none; */
+}
+
+.tree-zoom-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+}
+
+/* إحصائيات الشجرة */
+.tree-stats {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #2c3e50;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ========== أنماط jstree (بديل) ========== */
+.jstree-arabic .jstree-anchor {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 14px;
+    padding: 8px 15px;
+    text-align: right;
+    direction: rtl;
+}
+
+.jstree-arabic .jstree-node {
+    margin-right: 20px;
+}
+
+.jstree-arabic .jstree-icon {
+    color: #3498db;
+    font-size: 16px;
+}
+
+/* أنماط jstree حسب النوع */
+.jstree-arabic .project-node > .jstree-anchor {
+    color: #e67e22;
+    font-weight: bold;
+}
+
+.jstree-arabic .phase-node > .jstree-anchor {
+    color: #2980b9;
+    font-weight: 600;
+}
+
+.jstree-arabic .task-node > .jstree-anchor {
+    color: #27ae60;
+}
+
+.jstree-arabic .deliverable-node > .jstree-anchor {
+    color: #8e44ad;
+}
+
+.jstree-arabic .milestone-node > .jstree-anchor {
+    color: #c0392b;
+}
+
+/* تأثيرات hover */
+.jstree-arabic .jstree-hovered {
+    background: #e3f2fd !important;
+    border-radius: 4px;
+}
+
+.jstree-arabic .jstree-clicked {
+    background: #bbdefb !important;
+    border-radius: 4px;
+}
+
+/* أيقونات مخصصة */
+.jstree-arabic .jstree-icon.fa-folder {
+    color: #f39c12;
+}
+
+.jstree-arabic .jstree-icon.fa-folder-open {
+    color: #f39c12;
+}
+
+.jstree-arabic .jstree-icon.fa-file-alt {
+    color: #3498db;
+}
+
+.jstree-arabic .jstree-icon.fa-tasks {
+    color: #2ecc71;
+}
+
+.jstree-arabic .jstree-icon.fa-flag-checkered {
+    color: #e74c3c;
+}
+
+/* ========== تصميم متجاوب ========== */
+@media (max-width: 768px) {
+    .tree-container {
+        height: 400px;
+        padding: 10px;
+    }
+    
+    .tree-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .tree-control-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+    
+    .tree-zoom-slider {
+        width: 100px;
+    }
+    
+    .tree-stats {
+        font-size: 10px;
+        padding: 8px 12px;
+    }
+    
+    .Treant .node {
+        min-width: 100px;
+        min-height: 50px;
+        padding: 8px;
+    }
+    
+    .node-title {
+        font-size: 12px;
+    }
+    
+    .node-description {
+        font-size: 10px;
+    }
+}
+
+/* ========== رسوم متحركة ========== */
+@keyframes nodePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.Treant .node.highlight {
+    animation: nodePulse 1s infinite;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.Treant .node {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+
+
+/* أنماط دعم النصوص العربية في مخطط WBS */
+.arabic-caret {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    direction: rtl !important;
+    unicode-bidi: bidi-override !important;
+}
+
+.arabic-nested {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    direction: rtl !important;
+}
+
+.arabic-leaf {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* تحسينات للمخطط التفاعلي مع النصوص العربية */
+.node text {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    text-anchor: start !important;
+    direction: rtl !important;
+    unicode-bidi: bidi-override !important;
+}
+
+/* تحسينات للشجرة النصية */
+#wbsTextTree {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* تنسيق أفضل للتاريخ العربي في مخطط جانت */
+.date-header {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+}
+
+/* تحسين جودة الصور المصدرة */
+.diagram-container svg {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* إزالة أي أنماط قد تسبب مشاكل مع النصوص العربية */
+.gantt-simple-table {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+.gantt-simple-table th,
+.gantt-simple-table td {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* تحسين أزرار التصدير */
+.export-btn {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* تنسيق التبليغات */
+#custom-notification {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+/* تحسينات للعرض على الأجهزة المحمولة */
+@media (max-width: 768px) {
+    .node text {
+        font-size: 12px !important;
+    }
+    
+    .arabic-caret {
+        font-size: 14px !important;
+    }
+}
+
+/* إصلاح اتجاه النصوص في مخطط جانت */
+.gantt-simple-table {
+    direction: rtl !important;
+}
+
+.task-bar-simple {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    text-align: center !important;
+}

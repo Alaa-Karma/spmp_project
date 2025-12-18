@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Project Planner - مخطط المشاريع الذكي</title>
+    <!-- إضافة المكتبات الجديدة - قبل script.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+    <!-- إضافة Treant.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- إضافة مكتبة D3.js للرسم البياني -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- مكتبة PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- مكتبة D3 Gantt Chart -->
+    <script src="https://d3js.org/d3-scale.v3.min.js"></script>
+    <script src="https://d3js.org/d3-axis.v3.min.js"></script>
+    
+    <!-- مكتبة Docxtemplater لإنشاء ملفات Word -->
+    <script src="https://unpkg.com/docxtemplater@latest/build/docxtemplater.js"></script>
+    <script src="https://unpkg.com/pizzip@3.0.6/dist/pizzip.js"></script>
+    <script src="https://unpkg.com/pizzip@3.0.6/dist/pizzip-utils.js"></script>
+    <script src="https://unpkg.com/jszip-utils@0.1.0/dist/jszip-utils.min.js"></script>
+    <!-- مكتبة FileSaver لحفظ الملفات -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <!-- إضافة خط عربي محسن -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'arabic': ['"IBM Plex Sans Arabic"', 'sans-serif']
+                    },
+                    colors: {
+                        'primary': {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#baae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        'success': {
+                            500: '#22c55e',
+                            600: '#16a34a',
+                        },
+                        'warning': {
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        },
+                        'danger': {
+                            500: '#ef4444',
+                            600: '#dc2626',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-primary-900 to-indigo-900 min-h-screen text-gray-800 font-arabic">
+    <div id="app">
+        <!-- Header -->
+        <header class="text-center py-8 px-4 bg-white/95 backdrop-blur-sm shadow-xl mb-8 rounded-2xl mx-4 mt-4 card-hover">
+            <div class="flex flex-col items-center mb-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                    <i class="fas fa-project-diagram text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-primary-800 mb-2 flex items-center gap-2">
+                    <span>Smart Project Planner</span>
+                    <i class="fas fa-bolt text-yellow-500"></i>
+                </h1>
+            </div>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-6">
+                <i class="fas fa-lightbulb text-primary-500 ml-1"></i>
+                أدخل وصف مشروعك واحصل على خطة تخطيط وإدارة المشروع بالكامل
+            </p>
+            
+            <div class="mt-6 max-w-3xl mx-auto">
+                <form id="projectForm" class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fas fa-pen-alt absolute right-3 top-3.5 text-primary-400"></i>
+                        <input
+                            type="text"
+                            id="projectDescription"
+                            placeholder="وصف مشروعك هنا... (مثال: تطبيق ويب لإدارة المهام والمشاريع للفرق البرمجية)"
+                            class="w-full pr-10 pl-4 py-3 rounded-lg border-2 border-primary-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        id="submitBtn"
+                        class="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                    >
+                        <i class="fas fa-magic"></i>
+                        <span>توليد الخطة الشاملة</span>
+                    </button>
+                </form>
+                
+                
+            </div>
+            
+            <!-- Important Notice -->
+            <div class="mt-6 max-w-3xl mx-auto">
+                <div class="bg-yellow-50 border-r-4 border-yellow-500 p-4 rounded-lg shadow-sm">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 ml-3 mt-0.5"></i>
+                        <div class="text-right">
+                            <p class="text-yellow-800 font-medium">ملاحظة مهمة:</p>
+                            <p class="text-yellow-700 text-sm mt-1">
+                                للحصول على مخطط Gantt دقيق وتقدير زمني دقيق للمهام، يرجى ذكر الموارد البشرية المتاحة وحجم الفريق في وصف المشروع.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Error Message -->
+        <div id="errorMessage" class="max-w-4xl mx-auto px-4 mb-6 hidden">
+            <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 ml-3 text-lg"></i>
+                    <p id="errorText" class="text-red-700 font-medium"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="max-w-4xl mx-auto px-4 mb-6 hidden">
+            <div class="bg-gradient-to-r from-primary-50 to-blue-50 border-r-4 border-primary-500 p-4 rounded-lg flex items-center shadow-md">
+                <svg class="animate-spin -mr-1 ml-3 h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-primary-700 font-medium mr-3 flex items-center gap-2">
+                    <i class="fas fa-cogs"></i>
+                    <span>يُولِّد خطة مشروعك الذكية...</span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 pb-12">
+            <!-- Project Overview -->
+            <div id="resultsSection" class="hidden">
+                <!-- Project Header Card with Copy Button -->
+                <div class="bg-gradient-to-r from-primary-500 to-indigo-600 text-white rounded-2xl shadow-xl p-6 mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <h2 id="projectName" class="text-2xl font-bold mb-2"></h2>
+                            <div class="flex items-center gap-4">
+                                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-methodology ml-1"></i>
+                                    المنهجية: <span id="projectMethodology" class="font-bold"></span>
+                                </span>
+                                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-clock ml-1"></i>
+                                    <span id="projectDuration"></span>
+                                </span>
+                                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-layer-group ml-1"></i>
+                                    <span id="projectPhasesCount"></span> مرحلة
+                                </span>
+                                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-users ml-1"></i>
+                                    <span id="projectTeamSize"></span> فرد
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            
+                            <button id="copyJsonBtn" class="bg-white text-primary-600 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                             <i class="fas fa-copy"></i> <!-- تغيير الأيقونة -->
+                                    JSON نسخ البيانات ك 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Objectives & Requirements Grid (NO SCROLL) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                    <!-- Objectives Section -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 card-hover">
+                        <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                            <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                <i class="fas fa-bullseye ml-3 text-primary-600 icon-gradient"></i>
+                                أهداف المشروع
+                            </h2>
+                            <p class="text-gray-600 text-sm mt-1">الأهداف الرئيسية والمخرجات المتوقعة للمشروع</p>
+                        </div>
+                        <div class="p-6">
+                            <ul id="objectivesList" class="space-y-4">
+                                <!-- Objectives will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Requirements Section -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 card-hover">
+                        <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                            <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                <i class="fas fa-tasks ml-3 text-primary-600 icon-gradient"></i>
+                                المتطلبات الوظيفية
+                            </h2>
+                            <p class="text-gray-600 text-sm mt-1">الوظائف والميزات التي يجب أن يوفرها النظام</p>
+                        </div>
+                        <div class="p-6">
+                            <ul id="requirementsList" class="space-y-4">
+                                <!-- Requirements will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Time Estimation & Resources Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                    <!-- Time Estimation Using PERT -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 card-hover">
+                        <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                            <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                <i class="fas fa-chart-line ml-3 text-primary-600 icon-gradient"></i>
+                                تقدير الوقت باستخدام PERT
+                            </h2>
+                            <p class="text-gray-600 text-sm mt-1">تقدير زمني دقيق للمهام باستخدام طريقة PERT</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-gray-700 font-medium">إجمالي وقت المشروع:</span>
+                                    <span id="totalProjectTime" class="text-primary-600 font-bold text-lg"></span>
+                                </div>
+                                <div class="bg-gray-100 rounded-lg p-3 text-sm text-gray-600 mb-4">
+                                    <i class="fas fa-info-circle ml-2 text-primary-500"></i>
+                                    تم احتساب الوقت باستخدام طريقة PERT: (المتفائل + 4×المحتمل + المتشائم) ÷ 6
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المهمة</th>
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">متفائل (أيام)</th>
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">محتمل (أيام)</th>
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">متشائم (أيام)</th>
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">PERT (أيام)</th>
+                                            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الانحراف المعياري</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pertTableBody" class="bg-white divide-y divide-gray-200">
+                                        <!-- PERT rows will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Human Resources Section -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 card-hover">
+                        <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                            <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                <i class="fas fa-users ml-3 text-primary-600 icon-gradient"></i>
+                                الموارد البشرية
+                            </h2>
+                            <p class="text-gray-600 text-sm mt-1">فريق المشروع والتخصصات المطلوبة</p>
+                        </div>
+                        <div class="p-6">
+                            <div id="teamSizeAlert" class="bg-yellow-50 border-r-4 border-yellow-400 p-4 rounded-lg mb-4 hidden">
+                                <div class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 ml-3 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-yellow-800 font-medium text-sm">تحذير: حجم الفريق غير محدد</p>
+                                        <p class="text-yellow-700 text-xs mt-1">لم يتم تحديد حجم الفريق بوضوح. جاري استخدام تقديرات افتراضية.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul id="humanResourcesList" class="space-y-3">
+                                <!-- Human resources will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                  <!-- Gantt Chart Section - التصميم الجدولي -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 mb-8 card-hover">
+                    <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                    <i class="fas fa-chart-gantt ml-3 text-primary-600 icon-gradient"></i>
+                                    مخطط جانت الزمني
+                                </h2>
+                                <p class="text-gray-600 text-sm mt-1">جدول زمني تفاعلي للمشروع باستخدام طريقة PERT</p>
+                            </div>
+                            <div class="mt-3 sm:mt-0 flex flex-wrap gap-3">
+                                <div class="flex items-center gap-2">
+                                    <button id="exportGanttBtn" class="px-3 py-1.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm flex items-center gap-2">
+                                        <i class="fas fa-download"></i>
+                                        <span>تصدير المخطط</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <!-- إضافة وسيلة الإيضاح أعلى الجدول -->
+                        <div class="legend mb-4 p-3 bg-gradient-to-r from-primary-50 to-indigo-50 rounded-lg border border-primary-100">
+                            <div class="flex flex-wrap gap-4 justify-center">
+                                <div class="legend-item flex items-center gap-2">
+                                    <div class="legend-color status-0"></div>
+                                    <span class="text-sm text-gray-700">لم يبدأ</span>
+                                </div>
+                                <div class="legend-item flex items-center gap-2">
+                                    <div class="legend-color status-1"></div>
+                                    <span class="text-sm text-gray-700">قيد التنفيذ</span>
+                                </div>
+                                <div class="legend-item flex items-center gap-2">
+                                    <div class="legend-color status-2"></div>
+                                    <span class="text-sm text-gray-700">متأخر</span>
+                                </div>
+                                <div class="legend-item flex items-center gap-2">
+                                    <div class="legend-color status-3"></div>
+                                    <span class="text-sm text-gray-700">مكتمل جزئياً</span>
+                                </div>
+                                <div class="legend-item flex items-center gap-2">
+                                    <div class="legend-color status-4"></div>
+                                    <span class="text-sm text-gray-700">مكتمل</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- منطقة مخطط جانت الأساسية -->
+                        <!-- داخل قسم مخطط جانت -->
+                        <div class="gantt-simple-container" id="gantt-scroll-container">
+                            <!-- سيتم إنشاء الجدول هنا ديناميكياً -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- WBS Interactive Diagram Section -->
+                <!-- WBS Interactive Diagram Section -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 mb-8 card-hover">
+                    <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                                    <i class="fas fa-project-diagram ml-3 text-primary-600 icon-gradient"></i>
+                                    مخطط هيكل تقسيم العمل التفاعلي (WBS)
+                                </h2>
+                                <p class="text-gray-600 text-sm mt-1">تصور بياني لمراحل المشروع والمهام</p>
+                            </div>
+                            <!-- ستتم إضافة زر تصدير WBS هنا عبر JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-end gap-4 mb-6">
+                            <div class="flex items-center gap-4">
+                                <div class="flex gap-2">
+                                    <button class="zoom-btn" id="zoomIn" title="تكبير">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button class="zoom-btn" id="zoomOut" title="تصغير">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button class="zoom-btn" id="resetZoom" title="إعادة التعيين">
+                                        <i class="fas fa-expand-arrows-alt"></i>
+                                    </button>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="expand-btn flex items-center gap-2" id="expandAll">
+                                        <i class="fas fa-expand"></i>
+                                        <span>توسيع الكل</span>
+                                    </button>
+                                    <button class="collapse-btn flex items-center gap-2" id="collapseAll">
+                                        <i class="fas fa-compress"></i>
+                                        <span>طي الكل</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="diagram-container">
+                            <div class="loading" id="diagramLoading">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                جارٍ تحميل المخطط...
+                            </div>
+                            <svg id="wbs-tree-diagram" width="100%" height="100%"></svg>
+                            <div class="tooltip" id="diagramTooltip"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- WBS Text Tree Section (بدون scroll) -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 mb-8 card-hover">
+                    <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-primary-800 flex items-center mb-2 sm:mb-0">
+                                <i class="fas fa-tree ml-3 text-primary-600 icon-gradient"></i>
+                                الشجرة النصية لهيكل تقسيم العمل (WBS)
+                            </h2>
+                            <p class="text-gray-600 text-sm">قائمة تفصيلية لجميع المراحل والمهام</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-3 sm:mt-0">
+                            <div class="text-buttons flex gap-2">
+                                <button class="expand-btn flex items-center gap-2" id="expandTextTree">
+                                    <i class="fas fa-expand"></i>
+                                    <span>توسيع الكل</span>
+                                </button>
+                                <button class="collapse-btn flex items-center gap-2" id="collapseTextTree">
+                                    <i class="fas fa-compress"></i>
+                                    <span>طي الكل</span>
+                                </button>
+                            </div>
+                            <div class="stats bg-primary-50 px-4 py-2 rounded-lg border border-primary-100">
+                                <span id="nodeCount" class="text-primary-700 font-medium">
+                                    <i class="fas fa-code-branch ml-1"></i>
+                                    المجموع: <span id="nodeCountValue">0</span> مهمة
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- إزالة overflow-y-auto -->
+                    <div class="p-6">
+                        <ul id="wbsTextTree">
+                            <!-- WBS Text Tree will be populated here -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Risk Management Table -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm border border-primary-100 card-hover">
+                    <div class="p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-indigo-50">
+                        <h2 class="text-xl font-bold text-primary-800 flex items-center">
+                            <i class="fas fa-exclamation-triangle ml-3 text-primary-600 icon-gradient"></i>
+                            جدول إدارة المخاطر
+                        </h2>
+                        <p class="text-gray-600 text-sm mt-1">المخاطر المحتملة وخطط التخفيف منها</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">معرف الخطر</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وصف الخطر</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الأولوية</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">متابعة</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">خطة التخفيف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="riskTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Risk rows will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Demo Section (When no results) -->
+            <div id="demoSection" class="text-center py-12">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 max-w-4xl mx-auto">
+                    <i class="fas fa-rocket text-primary-500 text-5xl mb-6"></i>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">ابدأ بتوليد خطة مشروعك</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-gradient-to-br from-primary-50 to-indigo-50 p-6 rounded-xl border border-primary-100">
+                            <i class="fas fa-bullseye text-primary-600 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-gray-800 mb-2">الأهداف</h3>
+                            <p class="text-gray-600 text-sm">احصل على أهداف قابلة للقياس</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary-50 to-indigo-50 p-6 rounded-xl border border-primary-100">
+                            <i class="fas fa-tasks text-primary-600 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-gray-800 mb-2">المتطلبات</h3>
+                            <p class="text-gray-600 text-sm">متطلبات وظيفية مفصّلة</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary-50 to-indigo-50 p-6 rounded-xl border border-primary-100">
+                            <i class="fas fa-chart-gantt text-primary-600 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-gray-800 mb-2">مخطط Gantt</h3>
+                            <p class="text-gray-600 text-sm">جدول زمني دقيق باستخدام PERT</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary-50 to-indigo-50 p-6 rounded-xl border border-primary-100">
+                            <i class="fas fa-exclamation-triangle text-primary-600 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-gray-800 mb-2">إدارة المخاطر</h3>
+                            <p class="text-gray-600 text-sm">جدول كامل بإدارة المخاطر</p>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="bg-yellow-50 border-r-4 border-yellow-500 p-4 rounded-lg max-w-2xl mx-auto">
+                            <div class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-600 ml-3 mt-0.5"></i>
+                                <div class="text-right">
+                                    <p class="text-yellow-800 font-medium mb-2">💡 نصيحة للحصول على نتائج أفضل:</p>
+                                    <p class="text-yellow-700 text-sm">
+                                        عند وصف مشروعك، رجاءً اذكر الموارد البشرية المتاحة (مثل: فريق من 5 مبرمجين، مدير مشروع، مصمم واجهات) للحصول على تقدير زمني دقيق باستخدام طريقة PERT.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center py-6 text-white/80 text-sm mt-8">
+            <div class="flex flex-col items-center gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-brain text-primary-300"></i>
+                    <p>مُولِّد خطة المشروع الشاملة - مدعوم بتقنية الذكاء الاصطناعي</p>
+                </div>
+                <div class="text-xs text-white/60 mt-2">
+                    <p>يولد: الأهداف | المتطلبات | WBS | PERT | مخطط Gantt | جدول المخاطر</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <!-- في نهاية الملف قبل </body> -->
+    <script>
+        // Demo Project Data - تحديث ليتناسب مع بنية backend
+        function loadDemoProject() {
+            const demoDescription = "تطبيق ويب لإدارة المهام والمشاريع للفرق البرمجية مع نظام متابعة وإشعارات وتقارير أداء متقدمة. المشروع يشمل فريق من 6 أفراد: مدير مشروع، مبرمجين فرونت إند (2)، مبرمج باك إند (2)، مصمم واجهات، واختصاصي جودة.";
+            document.getElementById('projectDescription').value = demoDescription;
+            
+            // تشغيل النموذج مباشرة
+            const event = new Event('submit');
+            document.getElementById('projectForm').dispatchEvent(event);
+        }
+    </script>
+</body>
+</html>
