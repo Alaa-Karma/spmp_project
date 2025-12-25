@@ -419,7 +419,7 @@ class ProjectAnalyzer:
 # ==============================================
 # تهيئة المحلل مع مفتاح OpenRouter
 # ==============================================
-API_KEY = "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"
+API_KEY = "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"
 analyzer = ProjectAnalyzer(API_KEY)
 
 # ==============================================
